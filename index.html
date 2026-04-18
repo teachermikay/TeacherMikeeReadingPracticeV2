@@ -313,18 +313,18 @@
        📦 TEACHER DEFAULT DATA: UPDATE THESE FOR YOUR LESSON
        ============================================================ */
     const TEACHER_DEFAULTS = {
-        title: "Daily Greetings",
+        title: "Page 30: The Big Bad Wolf and the House of Bricks",
         sentences: [
-            "Good morning! How are you today?",
-            "It is a beautiful day outside.",
-            "I like to read English books.",
-            "The apple is red and sweet.",
-            "She goes to school by bus.",
-            "Can you help me with my bag?",
-            "What time is it right now?",
-            "My favorite color is blue.",
-            "We are learning something new.",
-            "Have a great afternoon, everyone!"
+            "The wolf sees the three little pigs in the house of bricks.",
+            "He says, \"Little pigs, little pigs, let me come in.\"",
+            "No, no, not by the hair of my chinny chin chin!",
+            "I will not let you in!",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
         ]
     };
 
@@ -340,7 +340,6 @@
 
     // --- Data Loading System ---
     function loadContent() {
-        // ALWAYS prioritize Teacher Defaults for the student view
         document.getElementById('lesson-title').value = TEACHER_DEFAULTS.title;
         const inputs = document.querySelectorAll('.sentence-box');
         TEACHER_DEFAULTS.sentences.forEach((text, i) => {
@@ -471,7 +470,6 @@
     }
 
     function startActivity() {
-        // Collect sentences currently in the input fields (Allows temporary teacher preview)
         const all = Array.from(document.querySelectorAll('.sentence-box')).map(i => i.value.trim()).filter(t => t.length > 0);
         if (all.length < 1) return alert("Please enter sentences!");
 
@@ -534,7 +532,6 @@
         setTimeout(() => { star.style.display = 'none'; showChoiceScreen(); }, 1500);
     }
 
-    // --- Data Management (Local only for temporary teacher editing) ---
     function saveData() {
         const data = { 
             title: document.getElementById('lesson-title').value,
@@ -567,7 +564,6 @@
         r.readAsText(e.target.files[0]);
     }
 
-    // --- Initialization ---
     window.onload = loadContent;
 </script>
 
