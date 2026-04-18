@@ -20,7 +20,8 @@
         * {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
+            /* TOUCH UX: Allow vertical panning but prevent accidental zoom */
+            touch-action: pan-y;
         }
 
         body, html {
@@ -29,9 +30,9 @@
             font-family: 'Jua', sans-serif;
             height: 100%;
             width: 100%;
-            overflow: hidden;
             color: var(--text-dark);
             background-color: var(--blue);
+            overflow: hidden;
         }
 
         .app-container {
@@ -64,6 +65,7 @@
             border-radius: 50px;
             box-shadow: var(--shadow);
             z-index: 10;
+            flex-shrink: 0;
         }
 
         h1 { margin: 0; color: #ff85a2; font-size: clamp(1.2rem, 4vw, 2.2rem); }
@@ -149,25 +151,33 @@
         .btn-play-rec { background-color: #4CAF50; color: white; }
         .rec-status { color: #ff4d4d; font-weight: bold; min-width: 100px; }
 
+        /* SCROLLABLE INTERFACE */
         #choice-screen {
             display: none;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
-            gap: 1.5vh;
+            gap: 2vh;
             width: 100%;
             max-width: 900px;
-            height: 75vh;
+            height: 100vh; /* flexible height */
+            overflow-y: auto; /* scrollable */
+            -webkit-overflow-scrolling: touch;
+            padding: 10px 0 40px 0;
+            scroll-behavior: smooth;
         }
+
+        #choice-screen::-webkit-scrollbar { display: none; }
 
         .chibi-box {
             width: 90%;
-            height: 15vh;
+            min-height: 15vh;
+            flex-shrink: 0;
             border-radius: 25px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 10px 30px;
+            padding: 20px 30px;
             text-align: center;
             font-size: clamp(1.2rem, 3.5vh, 2.5rem);
             cursor: pointer;
@@ -251,13 +261,13 @@
 <div id="container" class="app-container bg-menu">
     <header id="app-header">
         <h1>Teacher Mikee's English Learning Hub</h1>
-        <button id="end-practice-btn" class="btn-end-practice" onpointerdown="exitToMenu()">✖ End Practice</button>
+        <button id="end-practice-btn" class="btn-end-practice" onclick="exitToMenu()">✖ End Practice</button>
     </header>
 
     <div id="main-menu">
         <div id="menu-buttons" class="btn-group">
-            <button class="btn-input" onpointerdown="toggleInputPanel()">⌨️ INPUT</button>
-            <button class="btn-start" onpointerdown="startActivity()">🚀 START</button>
+            <button class="btn-input" onclick="toggleInputPanel()">⌨️ INPUT</button>
+            <button class="btn-start" onclick="startActivity()">🚀 START</button>
         </div>
 
         <div id="input-panel">
@@ -275,14 +285,13 @@
                 <input type="text" class="sentence-box" placeholder="10">
             </div>
             <div class="btn-group">
-                <button style="background:var(--peach)" onpointerdown="saveData()">💾 SAVE LOCAL</button>
-                <button class="btn-reset" onpointerdown="resetInputData()">🔄 RESET</button>
-                <button style="background:var(--blue)" onpointerdown="exportJSON()">📤 EXPORT</button>
-                <button style="background:var(--lavender)" onpointerdown="document.getElementById('fileInput').click()">📥 IMPORT</button>
+                <button style="background:var(--peach)" onclick="saveData()">💾 SAVE LOCAL</button>
+                <button class="btn-reset" onclick="resetInputData()">🔄 RESET</button>
+                <button style="background:var(--blue)" onclick="exportJSON()">📤 EXPORT</button>
+                <button style="background:var(--lavender)" onclick="document.getElementById('fileInput').click()">📥 IMPORT</button>
                 <input type="file" id="fileInput" style="display:none" accept=".json" onchange="importJSON(event)">
-                <button style="background:#ddd" onpointerdown="toggleInputPanel()">CLOSE</button>
+                <button style="background:#ddd" onclick="toggleInputPanel()">CLOSE</button>
             </div>
-            <p style="font-size: 0.8rem; margin-top: 10px; color: #888;">Note: Editing only changes this session. Refreshing loads teacher defaults.</p>
         </div>
     </div>
 
@@ -290,18 +299,18 @@
 
     <div id="reading-screen">
         <div class="recording-container">
-            <button id="btn-record" class="btn-rec" onpointerdown="startRecording()">🎤 Record</button>
-            <button id="btn-stop-rec" class="btn-stop" onpointerdown="stopRecording()" disabled>⏹ Stop</button>
-            <button id="btn-play-rec" class="btn-play-rec" onpointerdown="playRecording()" disabled>▶️ Play</button>
+            <button id="btn-record" class="btn-rec" onclick="startRecording()">🎤 Record</button>
+            <button id="btn-stop-rec" class="btn-stop" onclick="stopRecording()" disabled>⏹ Stop</button>
+            <button id="btn-play-rec" class="btn-play-rec" onclick="playRecording()" disabled>▶️ Play</button>
             <span id="rec-status" class="rec-status"></span>
         </div>
         
-        <button id="btn-read-full" class="btn-whole-sentence" onpointerdown="readWholeSentenceUI()">🔊 Read Whole Sentence</button>
+        <button id="btn-read-full" class="btn-whole-sentence" onclick="readWholeSentenceUI()">🔊 Read Whole Sentence</button>
         <div id="word-display" class="word-container"></div>
         
         <div class="nav-controls">
-            <button style="background:#ccc" onpointerdown="showChoiceScreen()">⬅ BACK</button>
-            <button style="background:#50c878; color:white; font-size:1.5rem" onpointerdown="triggerReward()">⭐ FINISH</button>
+            <button style="background:#ccc" onclick="showChoiceScreen()">⬅ BACK</button>
+            <button style="background:#50c878; color:white; font-size:1.5rem" onclick="triggerReward()">⭐ FINISH</button>
         </div>
     </div>
 
@@ -310,7 +319,7 @@
 
 <script>
     /* ============================================================
-       📦 TEACHER DEFAULT DATA: UPDATE THESE FOR YOUR LESSON
+       📦 TEACHER DEFAULT DATA
        ============================================================ */
     const TEACHER_DEFAULTS = {
         title: "Page 30: The Big Bad Wolf and the House of Bricks",
@@ -319,12 +328,7 @@
             "He says, \"Little pigs, little pigs, let me come in.\"",
             "No, no, not by the hair of my chinny chin chin!",
             "I will not let you in!",
-            "",
-            "",
-            "",
-            "",
-            "",
-            ""
+            "", "", "", "", "", ""
         ]
     };
 
@@ -332,59 +336,48 @@
     let preferredVoice = null;
     let isReadingSentence = false;
     let currentSentenceText = "";
+    
+    // --- SIMPLE TOUCH DETECTION ---
+    let touchMoved = false;
+    document.addEventListener("touchstart", () => { touchMoved = false; }, { passive: true });
+    document.addEventListener("touchmove", () => { touchMoved = true; }, { passive: true });
+
+    // Recording variables
     let mediaRecorder;
     let audioChunks = [];
     let audioUrl;
     let audioBlob;
     let recordTimer;
 
-    // --- Data Loading System ---
     function loadContent() {
         document.getElementById('lesson-title').value = TEACHER_DEFAULTS.title;
         const inputs = document.querySelectorAll('.sentence-box');
-        TEACHER_DEFAULTS.sentences.forEach((text, i) => {
-            if (inputs[i]) inputs[i].value = text;
-        });
+        TEACHER_DEFAULTS.sentences.forEach((text, i) => { if (inputs[i]) inputs[i].value = text; });
     }
 
-    // --- TTS Logic ---
     function loadVoices() {
         const voices = synth.getVoices();
         preferredVoice = voices.find(v => (v.name.includes('Google') || v.name.includes('Samantha') || v.name.includes('Female')) && v.lang.includes('en-US')) 
-                        || voices.find(v => v.lang.includes('en')) 
-                        || voices[0];
+                        || voices.find(v => v.lang.includes('en')) || voices[0];
     }
     if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = loadVoices;
     loadVoices();
 
-    function getSpeechSettings(text) {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.voice = preferredVoice;
-        utterance.rate = 0.60;
-        utterance.pitch = 1.10;
-        return utterance;
-    }
-
-    // --- UI Helpers ---
     function playClickSound() {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
-        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.1);
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.1);
+        } catch(e) {}
     }
-
-    document.addEventListener('pointerdown', (e) => {
-        if (e.target.tagName === 'BUTTON' || e.target.classList.contains('chibi-box')) {
-            playClickSound();
-        }
-    }, true);
 
     function readWholeSentenceUI() { readWholeSentence(currentSentenceText); }
 
@@ -393,7 +386,10 @@
         synth.cancel();
         setTimeout(() => {
             isReadingSentence = true;
-            const utterance = getSpeechSettings(fullText);
+            const utterance = new SpeechSynthesisUtterance(fullText);
+            utterance.voice = preferredVoice;
+            utterance.rate = 0.60;
+            utterance.pitch = 1.10;
             utterance.onend = () => isReadingSentence = false;
             synth.speak(utterance);
         }, 150);
@@ -403,14 +399,17 @@
         if (isReadingSentence) return;
         synth.cancel();
         setTimeout(() => {
-            const utterance = getSpeechSettings(word);
+            const utterance = new SpeechSynthesisUtterance(word);
+            utterance.voice = preferredVoice;
+            utterance.rate = 0.60;
+            utterance.pitch = 1.10;
             el.classList.add('speaking');
             utterance.onend = () => el.classList.remove('speaking');
             synth.speak(utterance);
         }, 50);
     }
 
-    // --- Recording Feature ---
+    // --- Recording ---
     async function startRecording() {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -455,11 +454,9 @@
         audioUrl = null;
     }
 
-    // --- Navigation & Core Flow ---
+    // --- Core Flow ---
     function resetInputData() {
-        if (confirm("Reset current inputs to teacher defaults?")) {
-            loadContent();
-        }
+        if (confirm("Reset current inputs to teacher defaults?")) loadContent();
     }
 
     function toggleInputPanel() {
@@ -481,7 +478,14 @@
             const div = document.createElement('div');
             div.className = 'chibi-box';
             div.innerText = text;
-            div.onpointerdown = () => openFullscreen(text);
+            
+            // FIX BOX CLICK EVENT
+            div.addEventListener("click", function() {
+                if (touchMoved) return; // prevent tap while scrolling
+                playClickSound();
+                openFullscreen(text);
+            });
+            
             grid.appendChild(div);
         });
 
@@ -489,6 +493,7 @@
         grid.style.display = 'flex';
         document.getElementById('end-practice-btn').style.display = 'block';
         document.getElementById('container').classList.replace('bg-menu', 'bg-practice');
+        grid.scrollTop = 0;
     }
 
     function openFullscreen(sentence) {
@@ -500,7 +505,7 @@
             const btn = document.createElement('div');
             btn.className = 'word-btn';
             btn.innerText = word;
-            btn.onpointerdown = (e) => { e.preventDefault(); speakWord(word, btn); };
+            btn.onclick = () => speakWord(word, btn);
             display.appendChild(btn);
         });
         document.getElementById('choice-screen').style.display = 'none';
@@ -538,7 +543,7 @@
             sentences: Array.from(document.querySelectorAll('.sentence-box')).map(i => i.value.trim())
         };
         localStorage.setItem('mikee_hub_temp', JSON.stringify(data));
-        alert("Saved to local browser cache! ✨");
+        alert("Saved locally! ✨");
     }
 
     function exportJSON() {
