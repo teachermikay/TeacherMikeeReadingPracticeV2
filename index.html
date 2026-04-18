@@ -145,29 +145,38 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            flex-shrink: 0;
         }
         .btn-rec { background-color: #ff4d4d; color: white; }
         .btn-stop { background-color: #555; color: white; }
         .btn-play-rec { background-color: #4CAF50; color: white; }
         .rec-status { color: #ff4d4d; font-weight: bold; min-width: 100px; }
 
-        /* SCROLLABLE INTERFACE */
-        #choice-screen {
+        /* UNIFIED SCROLLABLE SYSTEM */
+        #choice-screen, #reading-screen {
             display: none;
             flex-direction: column;
             justify-content: flex-start;
             align-items: center;
             gap: 2vh;
             width: 100%;
-            max-width: 900px;
-            height: 100vh; /* flexible height */
-            overflow-y: auto; /* scrollable */
+            height: 100vh;
+            overflow-y: auto;
             -webkit-overflow-scrolling: touch;
-            padding: 10px 0 40px 0;
+            padding: 20px 0 60px 0;
             scroll-behavior: smooth;
         }
 
-        #choice-screen::-webkit-scrollbar { display: none; }
+        /* Fixed Fullscreen for Reading screen to maintain UI positioning */
+        #reading-screen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: var(--white);
+            z-index: 100;
+        }
+
+        #choice-screen::-webkit-scrollbar, #reading-screen::-webkit-scrollbar { display: none; }
 
         .chibi-box {
             width: 90%;
@@ -193,19 +202,6 @@
         .chibi-box:nth-child(3) { background-color: var(--peach); }
         .chibi-box:nth-child(4) { background-color: var(--lavender); }
 
-        #reading-screen {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            background: var(--white);
-            z-index: 100;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
         .word-container {
             display: flex;
             flex-wrap: wrap;
@@ -213,6 +209,7 @@
             justify-content: center;
             max-width: 90%;
             margin-bottom: 2vh;
+            flex-shrink: 0;
         }
 
         .word-btn {
@@ -224,6 +221,7 @@
             cursor: pointer;
             transition: color 0.3s ease, background-color 0.3s ease;
             user-select: none;
+            flex-shrink: 0;
         }
 
         .word-btn.speaking {
@@ -236,6 +234,8 @@
             margin-top: 3vh;
             display: flex;
             gap: 20px;
+            flex-shrink: 0;
+            padding-bottom: 20px;
         }
 
         #reward-star {
@@ -261,13 +261,13 @@
 <div id="container" class="app-container bg-menu">
     <header id="app-header">
         <h1>Teacher Mikee's English Learning Hub</h1>
-        <button id="end-practice-btn" class="btn-end-practice" onclick="exitToMenu()">✖ End Practice</button>
+        <button id="end-practice-btn" class="btn-end-practice" onclick="if(touchMoved)return; exitToMenu()">✖ End Practice</button>
     </header>
 
     <div id="main-menu">
         <div id="menu-buttons" class="btn-group">
-            <button class="btn-input" onclick="toggleInputPanel()">⌨️ INPUT</button>
-            <button class="btn-start" onclick="startActivity()">🚀 START</button>
+            <button class="btn-input" onclick="if(touchMoved)return; toggleInputPanel()">⌨️ INPUT</button>
+            <button class="btn-start" onclick="if(touchMoved)return; startActivity()">🚀 START</button>
         </div>
 
         <div id="input-panel">
@@ -285,12 +285,12 @@
                 <input type="text" class="sentence-box" placeholder="10">
             </div>
             <div class="btn-group">
-                <button style="background:var(--peach)" onclick="saveData()">💾 SAVE LOCAL</button>
-                <button class="btn-reset" onclick="resetInputData()">🔄 RESET</button>
-                <button style="background:var(--blue)" onclick="exportJSON()">📤 EXPORT</button>
-                <button style="background:var(--lavender)" onclick="document.getElementById('fileInput').click()">📥 IMPORT</button>
+                <button style="background:var(--peach)" onclick="if(touchMoved)return; saveData()">💾 SAVE LOCAL</button>
+                <button class="btn-reset" onclick="if(touchMoved)return; resetInputData()">🔄 RESET</button>
+                <button style="background:var(--blue)" onclick="if(touchMoved)return; exportJSON()">📤 EXPORT</button>
+                <button style="background:var(--lavender)" onclick="if(touchMoved)return; document.getElementById('fileInput').click()">📥 IMPORT</button>
                 <input type="file" id="fileInput" style="display:none" accept=".json" onchange="importJSON(event)">
-                <button style="background:#ddd" onclick="toggleInputPanel()">CLOSE</button>
+                <button style="background:#ddd" onclick="if(touchMoved)return; toggleInputPanel()">CLOSE</button>
             </div>
         </div>
     </div>
@@ -299,18 +299,18 @@
 
     <div id="reading-screen">
         <div class="recording-container">
-            <button id="btn-record" class="btn-rec" onclick="startRecording()">🎤 Record</button>
-            <button id="btn-stop-rec" class="btn-stop" onclick="stopRecording()" disabled>⏹ Stop</button>
-            <button id="btn-play-rec" class="btn-play-rec" onclick="playRecording()" disabled>▶️ Play</button>
+            <button id="btn-record" class="btn-rec" onclick="if(touchMoved)return; startRecording()">🎤 Record</button>
+            <button id="btn-stop-rec" class="btn-stop" onclick="if(touchMoved)return; stopRecording()" disabled>⏹ Stop</button>
+            <button id="btn-play-rec" class="btn-play-rec" onclick="if(touchMoved)return; playRecording()" disabled>▶️ Play</button>
             <span id="rec-status" class="rec-status"></span>
         </div>
         
-        <button id="btn-read-full" class="btn-whole-sentence" onclick="readWholeSentenceUI()">🔊 Read Whole Sentence</button>
+        <button id="btn-read-full" class="btn-whole-sentence" onclick="if(touchMoved)return; readWholeSentenceUI()">🔊 Read Whole Sentence</button>
         <div id="word-display" class="word-container"></div>
         
         <div class="nav-controls">
-            <button style="background:#ccc" onclick="showChoiceScreen()">⬅ BACK</button>
-            <button style="background:#50c878; color:white; font-size:1.5rem" onclick="triggerReward()">⭐ FINISH</button>
+            <button style="background:#ccc" onclick="if(touchMoved)return; showChoiceScreen()">⬅ BACK</button>
+            <button style="background:#50c878; color:white; font-size:1.5rem" onclick="if(touchMoved)return; triggerReward()">⭐ FINISH</button>
         </div>
     </div>
 
@@ -337,7 +337,7 @@
     let isReadingSentence = false;
     let currentSentenceText = "";
     
-    // --- SIMPLE TOUCH DETECTION ---
+    // --- MATCHED TOUCH DETECTION LOGIC ---
     let touchMoved = false;
     document.addEventListener("touchstart", () => { touchMoved = false; }, { passive: true });
     document.addEventListener("touchmove", () => { touchMoved = true; }, { passive: true });
@@ -478,14 +478,11 @@
             const div = document.createElement('div');
             div.className = 'chibi-box';
             div.innerText = text;
-            
-            // FIX BOX CLICK EVENT
-            div.addEventListener("click", function() {
-                if (touchMoved) return; // prevent tap while scrolling
+            div.onclick = () => {
+                if (touchMoved) return; 
                 playClickSound();
                 openFullscreen(text);
-            });
-            
+            };
             grid.appendChild(div);
         });
 
@@ -505,11 +502,15 @@
             const btn = document.createElement('div');
             btn.className = 'word-btn';
             btn.innerText = word;
-            btn.onclick = () => speakWord(word, btn);
+            btn.onclick = () => {
+                if (touchMoved) return;
+                speakWord(word, btn);
+            };
             display.appendChild(btn);
         });
         document.getElementById('choice-screen').style.display = 'none';
         document.getElementById('reading-screen').style.display = 'flex';
+        document.getElementById('reading-screen').scrollTop = 0;
     }
 
     function showChoiceScreen() {
